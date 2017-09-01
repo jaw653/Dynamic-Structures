@@ -70,6 +70,7 @@ void insertCDAfront(CDA *items, void *value) {
         items->array[items->size] = items->array[items->backIndex];
         items->array[items->backIndex] = NULL;
         items->backIndex = items->size;
+        items->filledIndices += 1;
         items->size *= 2;
       }
     }
@@ -92,7 +93,46 @@ void insertCDAfront(CDA *items, void *value) {
   }
 */
 }
-
+/************* need to find all possible input cases for this and previous insert ***********/
 void insertCDAback(DA *items, void *value) {
+  //If array is empty
+  if (items->filledIndices == 0) {
+    items->array[0] = value;
+    items->filledIndices += 1;
+  }
+  else {
+    //If the index to the right exists
+    if (items->backIndex + 1 < items->size)
+      if(items->array[items->backIndex + 1] == NULL) {
+        items->array[items->backIndex + 1] = value;
+        items->filledIndices += 1;
+        items->backIndex += 1;
+      }
+      else {
+        //If there's a value already there
+      }
+    }
+    else if (items->backIndex + 1 == items->size) {
+      if (items->array[0] == NULL) {
+        items->array[0] == value;
+        items->filledIndices += 1;
+        items->backIndex = 0;
+      }
+      else {
+        //Array is full
+        items->array = realloc(items->array, 2 * items->size * sizeof(void*) );
 
+      }
+    }
+  }
 }
+
+void *removeCDAfront(CDA *items);
+void *removeCDAback(CDA *items);
+void unionCDA(CDA *recipient,CDA *donor);
+void *getCDA(CDA *items,int index);
+void *setCDA(CDA *items,int index,void *value);
+void **extractCDA(CDA *items);
+int sizeCDA(CDA *items);
+void visualizeCDA(FILE *,CDA *items);
+void displayCDA(FILE *,CDA *items);

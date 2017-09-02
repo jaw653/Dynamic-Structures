@@ -40,58 +40,34 @@ void insertCDAfront(CDA *items, void *value) {
     items->filledIndices += 1;
   }
   else {
-    if (items->frontIndex == 0) {
-      //If insert is possible
-      if (items->array[items->size-1] == NULL) {
-        items->array[items->size-1] == value;
-        items->frontIndex = items->size - 1;
-        items->filledIndices += 1;
-      }
-      else {
-        assert( items->size * 2 * sizeof(void*) != 0 );
-        items->array = realloc(items->array, 2 * items->size * sizeof(void*) );
-        items->size *= 2;
-        items->array[items->size-1] = value;
-        items->frontIndex = items->size - 1;
-        items->filledIndices += 1;
-      }
-    }
-    else {
-      //If front index is not 0 and insert is possible
-      if (items->array[frontIndex-1] == NULL) {
-        items->array[frontIndex-1] = value;
-        items->frontIndex = items->frontIndex - 1;
-        items->filledIndices += 1;
-      }
-      else {
-        //If insert is not possible (array full)
-        assert( items->size * 2 * sizeof(void*) != 0 );
-        items->array = realloc(items->array, 2 * items->size * sizeof(void*) );
-        items->array[items->size] = items->array[items->backIndex];
-        items->array[items->backIndex] = NULL;
-        items->backIndex = items->size;
-        items->filledIndices += 1;
-        items->size *= 2;
-      }
-    }
-  }
-/*
-  if (items->array[frontIndex] == 0) {
+    if (items->filledIndices == items->size) {
+      //If array is full
+      assert( items->size * 2 * sizeof(void*) );
+      items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
+      items->size *= 2;
 
-    if (items->array[items->size-1] == NULL) {
-      items->array[items->size-1] = value;
-    }
-    else {
-      items->array = realloc(items->array, 2 * items->size * sizeof(void*) );
-      items->array[items->size-1] = value;
-      size *= 2;
+      int index = 0;
+      while (index <= items->backIndex) {
+        items->array[(size/2) + index] = items->array[index];
+        items->array[(size/2) + index] = NULL;
+        index += 1;
+      }
+      items->backIndex = size/2 + (index - 1);
     }
 
-  }
-  else {
-    if (items->array[frontIndex - 1])
-  }
-*/
+    if (items->frontIndex - 1 >= 0) {
+      //normal case, just insert
+      items->array[items->frontIndex - 1] = value;
+      items->frontIndex -= 1;
+      items->filledIndices += 1;
+    }
+    else {
+      items->array[items->size - 1] = value;
+      items->filledIndices += 1;
+      items->frontIndex = items->size - 1;
+    }
+
+
 }
 /************* need to find all possible input cases for this and previous insert ***********/
 void insertCDAback(DA *items, void *value) {

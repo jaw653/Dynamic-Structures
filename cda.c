@@ -236,7 +236,23 @@ void unionCDA(CDA *recipient,CDA *donor) {
 void *getCDA(CDA *items,int index) {
   return items->array[items->frontIndex + index];
 }
-void *setCDA(CDA *items,int index,void *value);
+
+void *setCDA(CDA *items,int index,void *value) {
+  void *valToReturn = NULL;
+  if (index == items->size) {
+    insertCDAback(items, value);
+  }
+  else if (index == -1) {
+    insertCDAfront(items, value);
+  }
+  else {
+    valToReturn = items->array[index];
+    items->array[index] = value;
+  }
+
+  return valToReturn;
+}
+
 void **extractCDA(CDA *items);
 int sizeCDA(CDA *items);
 void visualizeCDA(FILE *,CDA *items);

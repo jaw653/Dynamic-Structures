@@ -168,7 +168,61 @@ void *removeCDAfront(CDA *items) {
 
   return valToReturn;
 }
-void *removeCDAback(CDA *items);
+void *removeCDAback(CDA *items) {
+  if (items->filledIndices == 0) {
+    return NULL;
+  }
+  else {
+    void *valToReturn = items->array[items->backIndex];
+    items->array[items->backIndex] = NULL;
+    items->filledIndices -= 1;
+
+    if (items->backIndex - 1 < 0) { items->backIndex = items->size - 1; }
+    else { items->backIndex -= 1; }
+
+    if (items->filledIndices < .25 * items->size) {
+      /*
+       *The following code creates a new tmpArray and fills it with all the non NULL
+       *values in the original array. It then cuts the size of the items->array (the
+       *actual object) by /2. It then repopulates the resized array with tmpArray, so
+       *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
+       *minus one. Removing the requested value happens after this "if" code block.
+       */
+      assert( (items->size / 2) * sizeof(void*) != 0 );
+
+      void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
+      void *ptr = items->array[items->backIndex];
+
+      int index = items->backIndex;
+      int tmpIndex = items->filledIndices - 1;
+      while (ptr) {
+        tmpArr[tmpIndex] = ptr;
+        index -= 1;
+
+        if (index < 0) {
+          index = items->size - 1;
+        }
+
+        ptr = items->array[index];
+        tmpIndex -= 1;
+      }
+
+      items->array = realloc( items->array, (items->size / 2) * sizeof(void*) );
+      items->size /= 2;
+
+      int i;
+      for (i = 0; i < items->filledIndices; i++) {
+        items->array[i] = tmpArr[i];
+      }
+
+      items->frontIndex = 0;
+      items->backIndex = items->filledIndices - 1;
+    }
+  }
+
+  return valToReturn;
+}
+
 void unionCDA(CDA *recipient,CDA *donor);
 void *getCDA(CDA *items,int index);
 void *setCDA(CDA *items,int index,void *value);

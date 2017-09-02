@@ -122,6 +122,7 @@ void unionDA(DA *recipient, DA *donor) {
     recipient->array[i] = donor->array[i - donor->size];    //FIXME: check this to see if the logic of the algo is correct. trying to append each element onto the end of the array that is now double the size
   }
 
+  donor = NULL;
 /*
   int totalSize = 0;
   int size1 = 0;

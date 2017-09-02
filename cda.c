@@ -5,6 +5,7 @@
  *circular dynamic array object
  *
  *Questions:
+ *-for getCDA, if they ask for 0 we should be returning the front of the arr, right?
  *-for removeCDA, should we shrink before or after the element is removed
  *-line 117(ish) if the array is empty, should i just return null?
  *-does removeCDA return the value that was removed?
@@ -223,8 +224,18 @@ void *removeCDAback(CDA *items) {
   return valToReturn;
 }
 
-void unionCDA(CDA *recipient,CDA *donor);
-void *getCDA(CDA *items,int index);
+void unionCDA(CDA *recipient,CDA *donor) {
+  int i;
+  for (i = donor->frontIndex; i < donor->filledIndices; i++) {
+    insertCDAback(recipient, donor->array[i]);
+  }
+
+  donor = NULL;
+}
+
+void *getCDA(CDA *items,int index) {
+  return items->array[items->frontIndex + index];
+}
 void *setCDA(CDA *items,int index,void *value);
 void **extractCDA(CDA *items);
 int sizeCDA(CDA *items);

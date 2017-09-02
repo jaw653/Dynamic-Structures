@@ -7,6 +7,7 @@
 
  /*
   *Questions:
+  *-to fix potential comma problem in display: if (index != backIndex) print comma
   *-should we initialize array to size 2?
   *-give lusth credit for making node.c, node.h, da.h files
   *-need to add assertions for most functions

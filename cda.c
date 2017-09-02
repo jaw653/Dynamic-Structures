@@ -5,6 +5,7 @@
  *circular dynamic array object
  *
  *Questions:
+ *-to fix potential problems, may have accidentally set index = 0 instead of frontIndex or backIndex
  *-for getCDA, if they ask for 0 we should be returning the front of the arr, right?
  *-for removeCDA, should we shrink before or after the element is removed
  *-line 117(ish) if the array is empty, should i just return null?
@@ -253,7 +254,57 @@ void *setCDA(CDA *items,int index,void *value) {
   return valToReturn;
 }
 
-void **extractCDA(CDA *items);
-int sizeCDA(CDA *items);
-void visualizeCDA(FILE *,CDA *items);
+void **extractCDA(CDA *items) {
+  void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
+  void *ptr = items->array[items->frontIndex];
+
+  int index = items->frontIndex;
+  int tmpIndex = 0;
+  while (ptr) {
+    tmpArr[tmpIndex] = ptr;
+    index += 1;
+
+    if (index == items->size) {
+      index = 0;
+    }
+
+    ptr = items->array[index];
+  }
+
+  items->frontIndex = 0;
+  items->backIndex = items->filledIndices - 1;
+
+  items->array = realloc( items->array, sizeof(void*) );
+  items->filledIndices = 0;
+
+  return tmpArr;
+}
+int sizeCDA(CDA *items) {
+  return items->filledIndices;
+}
+void visualizeCDA(FILE *,CDA *items) {
+  fprintf(fp, "(");
+  void *ptr = items->array[items->frontIndex];
+
+  if (items->filledIndices != 0) {
+    int index = items->frontIndex;
+    while (ptr) {
+      items->display(fp, ptr);
+      if (index != backIndex) { fprintf(fp, ","); }
+
+      index += 1;
+      if (index == items->size) {
+        index = 0;
+      }
+
+      ptr = items->array[index];
+    }
+  }
+
+  fprintf(fp, ")");
+
+  int remainder = items->size - items->filledIndices;
+
+  fprintf(fp, "(%d)", remainder);
+}
 void displayCDA(FILE *,CDA *items);

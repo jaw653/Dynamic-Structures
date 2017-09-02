@@ -3,6 +3,10 @@
  *University of Alabama
  *This file serves as method implementations for the
  *circular dynamic array object
+ *
+ *Questions:
+ *-make sure that you added in all assertions
+ *-can i add my own "private" helper functions into these classes?
  */
 
 #include <stdio.h>
@@ -42,17 +46,19 @@ void insertCDAfront(CDA *items, void *value) {
   else {
     if (items->filledIndices == items->size) {
       //If array is full
-      assert( items->size * 2 * sizeof(void*) );
-      items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
-      items->size *= 2;
+      if (items->frontIndex != 0) {
+        assert( items->size * 2 * sizeof(void*) );
+        items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
+        items->size *= 2;
 
-      int index = 0;
-      while (index <= items->backIndex) {
-        items->array[(size/2) + index] = items->array[index];
-        items->array[(size/2) + index] = NULL;
-        index += 1;
+        int index = 0;
+        while (index <= items->backIndex) {
+          items->array[(size/2) + index] = items->array[index];
+          items->array[(size/2) + index] = NULL;
+          index += 1;
+        }
+        items->backIndex = size/2 + (index - 1);
       }
-      items->backIndex = size/2 + (index - 1);
     }
 
     if (items->frontIndex - 1 >= 0) {
@@ -66,8 +72,7 @@ void insertCDAfront(CDA *items, void *value) {
       items->filledIndices += 1;
       items->frontIndex = items->size - 1;
     }
-
-
+  }
 }
 /************* need to find all possible input cases for this and previous insert ***********/
 void insertCDAback(DA *items, void *value) {
@@ -77,33 +82,38 @@ void insertCDAback(DA *items, void *value) {
     items->filledIndices += 1;
   }
   else {
-    //If the index to the right exists
-    if (items->backIndex + 1 < items->size)
-      if(items->array[items->backIndex + 1] == NULL) {
-        items->array[items->backIndex + 1] = value;
-        items->filledIndices += 1;
-        items->backIndex += 1;
-      }
-      else {
-        //If there's a value already there
+    if (items->filledIndices == items->size) {
+      if (items->frontIndex != 0) {
+        assert( items->size * 2 * sizeof(void*) );
+        items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
+        items->size *= 2;
+
+        int index = 0;
+        while (index <= items->backIndex) {
+          items->array[(size/2) + index] = items->array[index];
+          items->array[(size/2) + index] = NULL;
+          index += 1;
+        }
+        items->backIndex = size/2 + (index - 1);
       }
     }
-    else if (items->backIndex + 1 == items->size) {
-      if (items->array[0] == NULL) {
-        items->array[0] == value;
-        items->filledIndices += 1;
-        items->backIndex = 0;
-      }
-      else {
-        //Array is full
-        items->array = realloc(items->array, 2 * items->size * sizeof(void*) );
 
-      }
+    if (items->backIndex + 1 < size) {
+      items->array[backIndex + 1] = value;
+      items->filledIndices += 1;
+      items->backIndex += 1;
+    }
+    else {
+      items->array[0] = value;
+      items->filledIndices += 1;
+      items->backIndex = 0;
     }
   }
 }
 
-void *removeCDAfront(CDA *items);
+void *removeCDAfront(CDA *items) {
+
+}
 void *removeCDAback(CDA *items);
 void unionCDA(CDA *recipient,CDA *donor);
 void *getCDA(CDA *items,int index);

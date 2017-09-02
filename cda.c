@@ -307,4 +307,24 @@ void visualizeCDA(FILE *,CDA *items) {
 
   fprintf(fp, "(%d)", remainder);
 }
-void displayCDA(FILE *,CDA *items);
+void displayCDA(FILE *,CDA *items) {
+  fprintf(fp, "(");
+  void *ptr = items->array[items->frontIndex];
+
+  if (items->filledIndices != 0) {
+    int index = items->frontIndex;
+    while (ptr) {
+      items->display(fp, ptr);
+      if (index != backIndex) { fprintf(fp, ","); }
+
+      index += 1;
+      if (index == items->size) {
+        index = 0;
+      }
+
+      ptr = items->array[index];
+    }
+  }
+
+  fprintf(fp, ")");
+}

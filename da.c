@@ -7,11 +7,14 @@
 
  /*
   *Questions:
+  *-remove function in this class returned items instead of tmp, check the other classes for similar mistake...
+  *-for setDA, shoudl i make the if statement if it is equal to size - 1 or just size?
   *-to fix potential comma problem in display: if (index != backIndex) print comma
   *-should we initialize array to size 2?
   *-give lusth credit for making node.c, node.h, da.h files
   *-need to add assertions for most functions
   *-can i have all the libraries i imported?
+  *-tried to implement this file in stack.c and got compiler error "incomplete type"
   */
 
 #include <stdio.h>
@@ -56,27 +59,8 @@ void insertDA(DA *items, void *value) {
 
     items->size *= 2;
     items->filledIndices += 1;
-/*
-    void *tmp[items->size*2];
-
-    //Copying values of smaller array to array of twice the size
-    int i = 0;
-    for (i = 0; i < items->filledIndices; i++) {    //FIXME: might have to change upper bound of this loop to size instead of filledIndices
-      tmp[i] = items->array[i];
-    }
-    tmp[items->filledIndices] = value;
-
-    for (i = 0; i <= items->size*2; i++) {
-      items->array[i] = tmp[i];
-    }
-
-    //Delete temporary array
-    free(tmp);                                      //FIXME: are these free's needed?
-
-    items->size = items->size * 2;
-    items->filledIndices += 1;
-*/
   }
+
   return;
 }
 
@@ -84,31 +68,16 @@ void *removeDA(DA *items) {
   //FIXME: Add assertion that the size shall be greater than 0
   //FIXME: The rubric says that the array should never shrink below the size of 1...what about initiaizing it to size 0?
   //FIXME: Do we need a certain runtime? Rn, i have it creating a whole new array in order to actually get rid of the value. otherwise, is there a way to simply get rid of one value?
-
+  void *tmp = items->array[items->filledIndices];
   items->array[items->filledIndices] = NULL;
   items->filledIndices -= 1;
 
   if ( items->filledIndices < .25 * items->size ) {     //FIXME: < or <= ?
 
     items->array = realloc( items->array, (items->size/2) * sizeof(void*) );
-/*
-    void *tmp[items->size/2];
-
-    int i = 0;
-    for (i = 0; i < items->filledIndices; i++) {
-      tmp[i] = items->array[i];
-    }
-
-    for (i = 0; i < items->size/2; i++) {
-      items->array[i] = tmp[i];
-    }
-
-    free(tmp);
-
-    items->size /= 2;
-*/
   }
-  return items;
+
+  return tmp;
 }
 
 
@@ -124,32 +93,6 @@ void unionDA(DA *recipient, DA *donor) {
   }
 
   donor = NULL;
-/*
-  int totalSize = 0;
-  int size1 = 0;
-  int size2 = 0;
-
-  int i;
-  for (i = 0; recipient->array[i]; i++) {
-    totalSize += 1;
-    size1 += 1;
-  }
-  for (i = 0; donor->array[i]; i++) {
-    totalSize += 1;
-    size2 += 1;
-  }
-
-  void **tmp = malloc( totalSize * sizeof(void*) );
-  memcpy( tmp, recipient->array, size1 * sizeof(void*) );
-  memcpy( tmp + size1, donor->array, size2 * sizeof(void*) );
-
-  //ok, now tmp is the array of pointers that you want to put in recipient
-  //so, make the recipient array large enough to hold all the necessary values (totalSize)
-  //then either set recipient->array = tmp or copy each individual value into recipient
-
-  //is the above method going to be linear? cause every time you will have to create a new array...
-  realloc()
-*/
 }
 
 void *getDA(DA *items, int index) {
@@ -174,7 +117,6 @@ void *setDA(DA *items, int index, void *value) {
 
   return replacedVal;
 }
-
 
 void **extractDA(DA *items) {
   //FIXME: Add assertion that mem allocated shall not be zero

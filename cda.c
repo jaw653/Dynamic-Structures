@@ -279,9 +279,11 @@ void **extractCDA(CDA *items) {
 
   return tmpArr;
 }
+
 int sizeCDA(CDA *items) {
   return items->filledIndices;
 }
+
 void visualizeCDA(FILE *,CDA *items) {
   fprintf(fp, "(");
   void *ptr = items->array[items->frontIndex];

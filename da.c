@@ -31,8 +31,9 @@ struct da {
 };
 
 DA *newDA(void (*d)(FILE *, void *)) {
-  DA *arr = malloc( sizeof(DA) );
   assert( sizeof(DA) != 0 );
+
+  DA *arr = malloc( sizeof(DA) );
 
   arr->array = malloc( 1 * sizeof(void*) );
   arr->display = d;
@@ -52,8 +53,9 @@ void insertDA(DA *items, void *value) {
   }
 
   else {
-    items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
     assert(sizeof(void*) * items->size * 2 != 0);
+
+    items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
 
     items->array[items->filledIndices] = value;
 
@@ -65,9 +67,9 @@ void insertDA(DA *items, void *value) {
 }
 
 void *removeDA(DA *items) {
-  //FIXME: Add assertion that the size shall be greater than 0
   //FIXME: The rubric says that the array should never shrink below the size of 1...what about initiaizing it to size 0?
-  //FIXME: Do we need a certain runtime? Rn, i have it creating a whole new array in order to actually get rid of the value. otherwise, is there a way to simply get rid of one value?
+  assert(items->filledIndices > 0);
+
   void *tmp = items->array[items->filledIndices];
   items->array[items->filledIndices] = NULL;
   items->filledIndices -= 1;
@@ -96,13 +98,12 @@ void unionDA(DA *recipient, DA *donor) {
 }
 
 void *getDA(DA *items, int index) {
-  //FIXME: Add assertion that the index shall be greater than or equal to zero and less than the size
-  assert(index >= 0 && index < items->size);
+  assert(index >= 0 && index < items->filledIndices);
   return items->array[index];
 }
 
 void *setDA(DA *items, int index, void *value) {
-  assert(index >= 0 && index <= items->size);  //FIXME: Add assertion that the index shall be >= 0 and <= size
+  assert(index >= 0 && index <= items->filledIndices);  //FIXME: Add assertion that the index shall be >= 0 and <= size
 
   void *replacedVal;
 
@@ -119,11 +120,6 @@ void *setDA(DA *items, int index, void *value) {
 }
 
 void **extractDA(DA *items) {
-  //FIXME: Add assertion that mem allocated shall not be zero
-  /*The extract method returns the underlying C array. The array is shrunk to
-   *an exact fit prior to being returned. The DA object gets a new array of
-   *capacity one and size zero.
-   */
    assert( items->filledIndices * sizeof(void*) != 0 );
 
    items->array = realloc( items->array, items->filledIndices * sizeof(void*) );

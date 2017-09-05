@@ -22,6 +22,8 @@ struct queue {
 };
 
 QUEUE *newQUEUE(void (*d)(FILE *, void *)) {
+  assert( sizeof(QUEUE) != 0 );
+
   QUEUE *newQueue = malloc( sizeof(QUEUE) );
   newQueue->array = newCDA(d);
 
@@ -33,10 +35,12 @@ void enqueue(QUEUE *items, void *value) {
 }
 
 void *dequeue(QUEUE *items) {
+  assert( sizeCDA(items->array) > 0 );
   return removeCDAfront(items->array);
 }
 
 void *peekQUEUE(QUEUE *items) {
+  assert( sizeCDA(items->array) > 0 );
   return getCDA(items->array, 0);
 }
 

@@ -29,8 +29,9 @@ struct cda {
 };
 
 CDA *newCDA(void (*d)(FILE *, void *)) {
-    CDA *arr = malloc( sizeof(CDA) );
     assert(sizeof(CDA) != 0);
+
+    CDA *arr = malloc( sizeof(CDA) );
 
     arr->array = malloc( 1 * sizeof(void*) );
     arr->display = d;
@@ -52,7 +53,7 @@ void insertCDAfront(CDA *items, void *value) {
     if (items->filledIndices == items->size) {
       //If array is full
       if (items->frontIndex != 0) {
-        assert( items->size * 2 * sizeof(void*) );
+        assert( items->size * 2 * sizeof(void*) != 0 );
         items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
         items->size *= 2;
 
@@ -136,7 +137,7 @@ void *removeCDAfront(CDA *items) {
        *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
        *minus one. Removing the requested value happens after this "if" code block.
        */
-      assert( (items->size / 2) * sizeof(void*) != 0 );
+      assert( items->filledIndices != 0 );
 
       void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
       void *ptr = items->array[items->frontIndex];
@@ -190,7 +191,7 @@ void *removeCDAback(CDA *items) {
        *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
        *minus one. Removing the requested value happens after this "if" code block.
        */
-      assert( (items->size / 2) * sizeof(void*) != 0 );
+      assert( items->filledIndices != 0 );
 
       void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
       void *ptr = items->array[items->backIndex];
@@ -235,10 +236,13 @@ void unionCDA(CDA *recipient,CDA *donor) {
 }
 
 void *getCDA(CDA *items,int index) {
+  assert(index >= 0 && index < items->filledIndices);
   return items->array[items->frontIndex + index];
 }
 
 void *setCDA(CDA *items,int index,void *value) {
+  assert(index >= -1 && index <= items->filledIndices);
+
   void *valToReturn = NULL;
   if (index == items->size) {
     insertCDAback(items, value);
@@ -255,6 +259,8 @@ void *setCDA(CDA *items,int index,void *value) {
 }
 
 void **extractCDA(CDA *items) {
+  assert(items->filledIndices * sizeof(void*));
+  
   void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
   void *ptr = items->array[items->frontIndex];
 

@@ -19,6 +19,8 @@ struct stack {
 };
 
 STACK *newSTACK(void (*d)(FILE *, void *)) {
+  assert( sizeof(STACK) != 0 );
+
   STACK *myStack = malloc( sizeof(STACK) );
   myStack->vector = newDA(d);
 
@@ -30,11 +32,13 @@ void push(STACK *items, void *value) {
 }
 
 void *pop(STACK *items) {
+  assert( sizeDA(items->vector) > 0 );
   void *popVal = removeDA(items->vector);
   return popVal;
 }
 
 void *peekSTACK(STACK *items) {
+  assert( sizeDA(items->vector) > 0 );
   int index = sizeDA(items->vector);
   return getDA(items->vector, index);
 }

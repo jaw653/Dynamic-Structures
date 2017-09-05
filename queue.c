@@ -37,9 +37,7 @@ void *dequeue(QUEUE *items) {
 }
 
 void *peekQUEUE(QUEUE *items) {
-  void *valToReturn = removeCDAfront(items->array);
-  insertCDAfront(items->array, valToReturn);
-  return valToReturn;
+  return getCDA(items->array, 0);
 }
 
 int sizeQUEUE(QUEUE *items) {

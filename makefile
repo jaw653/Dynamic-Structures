@@ -6,14 +6,14 @@
 #REMEMBER TO REMOVE -C COMPILE FLAG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 OPTS = -Wall -Wextra -std=c99
 
-all: da cda stack queue
+all: da.o cda.o stack.o queue.o
 
 #fix files to be compiled when you figure our what all their names should be
-da: da.c
+da.o: da.c
 	gcc $(OPTS) da.c -c
 
 cda: cda.c
-	gcc $(OPTS) da.c -c
+	gcc $(OPTS) cda.c -c
 
 stack: stack.c
 	gcc $(OPTS) stack.c -c

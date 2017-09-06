@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
+#include <stdlib.h>
 #include "cda.h"
 
 struct cda {
@@ -59,11 +60,11 @@ void insertCDAfront(CDA *items, void *value) {
 
         int index = 0;
         while (index <= items->backIndex) {
-          items->array[(size/2) + index] = items->array[index];
-          items->array[(size/2) + index] = NULL;
+          items->array[(items->size/2) + index] = items->array[index];
+          items->array[(items->size/2) + index] = NULL;
           index += 1;
         }
-        items->backIndex = size/2 + (index - 1);
+        items->backIndex = items->size/2 + (index - 1);
       }
     }
 
@@ -81,7 +82,7 @@ void insertCDAfront(CDA *items, void *value) {
   }
 }
 
-void insertCDAback(DA *items, void *value) {
+void insertCDAback(CDA *items, void *value) {
   //If array is empty
   if (items->filledIndices == 0) {
     items->array[0] = value;
@@ -96,16 +97,16 @@ void insertCDAback(DA *items, void *value) {
 
         int index = 0;
         while (index <= items->backIndex) {
-          items->array[(size/2) + index] = items->array[index];
-          items->array[(size/2) + index] = NULL;
+          items->array[(items->size/2) + index] = items->array[index];
+          items->array[(items->size/2) + index] = NULL;
           index += 1;
         }
-        items->backIndex = size/2 + (index - 1);
+        items->backIndex = items->size/2 + (index - 1);
       }
     }
 
-    if (items->backIndex + 1 < size) {
-      items->array[backIndex + 1] = value;
+    if (items->backIndex + 1 < items->size) {
+      items->array[items->backIndex + 1] = value;
       items->filledIndices += 1;
       items->backIndex += 1;
     }
@@ -118,15 +119,16 @@ void insertCDAback(DA *items, void *value) {
 }
 
 void *removeCDAfront(CDA *items) {
+  void *valToReturn = items->array[items->frontIndex];
+
   if (items->filledIndices == 0) {
     return NULL;
   }
   else {
-    void *valToReturn = items->array[items->frontIndex];
     items->array[items->frontIndex] = NULL;
     items->filledIndices -= 1;
 
-    if (items->frontIndex + 1 == size) { items->frontIndex = 0; }
+    if (items->frontIndex + 1 == items->size) { items->frontIndex = 0; }
     else { items->frontIndex += 1; }
 
     if (items->filledIndices < .25 * items->size) {
@@ -172,11 +174,12 @@ void *removeCDAfront(CDA *items) {
   return valToReturn;
 }
 void *removeCDAback(CDA *items) {
+  void *valToReturn = items->array[items->backIndex];
+
   if (items->filledIndices == 0) {
     return NULL;
   }
   else {
-    void *valToReturn = items->array[items->backIndex];
     items->array[items->backIndex] = NULL;
     items->filledIndices -= 1;
 
@@ -260,7 +263,7 @@ void *setCDA(CDA *items,int index,void *value) {
 
 void **extractCDA(CDA *items) {
   assert(items->filledIndices * sizeof(void*));
-  
+
   void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
   void *ptr = items->array[items->frontIndex];
 
@@ -290,7 +293,7 @@ int sizeCDA(CDA *items) {
   return items->filledIndices;
 }
 
-void visualizeCDA(FILE *,CDA *items) {
+void visualizeCDA(FILE *fp,CDA *items) {
   fprintf(fp, "(");
   void *ptr = items->array[items->frontIndex];
 
@@ -298,7 +301,7 @@ void visualizeCDA(FILE *,CDA *items) {
     int index = items->frontIndex;
     while (ptr) {
       items->display(fp, ptr);
-      if (index != backIndex) { fprintf(fp, ","); }
+      if (index != items->backIndex) { fprintf(fp, ","); }
 
       index += 1;
       if (index == items->size) {
@@ -315,7 +318,8 @@ void visualizeCDA(FILE *,CDA *items) {
 
   fprintf(fp, "(%d)", remainder);
 }
-void displayCDA(FILE *,CDA *items) {
+
+void displayCDA(FILE *fp,CDA *items) {
   fprintf(fp, "(");
   void *ptr = items->array[items->frontIndex];
 
@@ -323,7 +327,7 @@ void displayCDA(FILE *,CDA *items) {
     int index = items->frontIndex;
     while (ptr) {
       items->display(fp, ptr);
-      if (index != backIndex) { fprintf(fp, ","); }
+      if (index != items->backIndex) { fprintf(fp, ","); }
 
       index += 1;
       if (index == items->size) {

@@ -50,6 +50,8 @@ void insertCDAfront(CDA *items, void *value) {
   if (items->filledIndices == 0) {
     items->array[items->filledIndices] = value;
     items->filledIndices += 1;
+    items->frontIndex = 0;
+    items->backIndex = 0;
   }
   else {
     if (items->filledIndices < items->size) {
@@ -89,110 +91,105 @@ void insertCDAfront(CDA *items, void *value) {
 }
 
 void insertCDAback(CDA *items, void *value) {
-  //If array is empty
+  assert( items->size * 2 * sizeof(void*) != 0 );
+
   if (items->filledIndices == 0) {
-    items->array[0] = value;
+    items->array[items->filledIndices] = value;
     items->filledIndices += 1;
+    items->frontIndex = 0;
+    items->backIndex = 0;
   }
   else {
-    if (items->filledIndices == items->size) {
-      if (items->frontIndex != 0) {
-        assert( items->size * 2 * sizeof(void*) != 0);
-        items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
-        items->size *= 2;
-
-        int index = 0;
-        while (index != items->backIndex) {
-          items->array[(items->size/2) + index] = items->array[index];
-          items->array[(items->size/2) + index] = NULL;
-          index += 1;
-          if (index == (items->size/2) - 1) index = 0;
-        }
-        items->backIndex = items->size/2 + (index - 1);
+    if (items->filledIndices < items->size) {
+      //If there is room in the array
+      if (items->backIndex == items->size - 1) {
+        items->backIndex = 0;
+        items->array[items->backIndex] = value;
+        items->filledIndices += 1;
+      }
+      else {
+        items->array[items->backIndex + 1] = value;
+        items->backIndex += 1;
+        items->filledIndices += 1;
       }
     }
-
-    if (items->backIndex + 1 < items->size) {
-      items->array[items->backIndex + 1] = value;
-      items->filledIndices += 1;
-      items->backIndex += 1;
-    }
     else {
-      items->array[0] = value;
+      //Following code doubles size and then copies values w/ frontIndex = 0
+      void **tmp = malloc(items->size * 2 * sizeof(void*));
+
+      int i;
+      int origIndex = items->frontIndex;
+      for (i = 0; i < items->filledIndices; i++) {
+        tmp[i] = items->array[origIndex];
+        if (origIndex == items->size - 1) { origIndex = 0; }
+        else { origIndex += 1; }
+      }
+
+      items->backIndex = items->filledIndices;
+      items->frontIndex = 0;
+      items->array = realloc( items->array, 2 * items->size * sizeof(void*));
+      items->array = tmp;
+      items->size *= 2;
+
+      items->array[items->filledIndices] = value;
       items->filledIndices += 1;
-      items->backIndex = 0;
     }
   }
 }
 
 void *removeCDAfront(CDA *items) {
-  void *valToReturn = items->array[items->frontIndex];
+  assert( items->size != 0 );
+//  assert( items->filledIndices != 0 );
+  void *valToReturn = NULL;
 
   if (items->filledIndices == 0) {
-    return NULL;
+    valToReturn = NULL;
   }
   else {
+    if (items->filledIndices - 1 < .25 * items->size) {
+      /*
+       *The following code creates a new tmpArray and fills it with all the non NULL
+       *values in the original array. It then cuts the size of the items->array (the
+       *actual object) by /2. It then repopulates the resized array with tmpArray, so
+       *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
+       *minus one. Removing the requested value happens after this "if" code block.
+       */
+      void **tmp = malloc ( items->size/2 * sizeof(void*) );
+
+      int i;
+      int origIndex = items->frontIndex;
+      for (i = 0; i < items->filledIndices; i++) {
+        tmp[i] = items->array[origIndex];
+        if (origIndex == items->size - 1) { origIndex = 0; }
+        else { origIndex += 1; }
+      }
+
+      items->size /= 2;
+      items->array = realloc( items->array, items->size * sizeof(void*) );
+      items->array = tmp;
+      items->frontIndex = 0;
+      items->backIndex = items->filledIndices - 1;
+    }
+
+    valToReturn = items->array[items->frontIndex];
     items->array[items->frontIndex] = NULL;
     items->filledIndices -= 1;
 
     if (items->frontIndex + 1 == items->size) { items->frontIndex = 0; }
     else { items->frontIndex += 1; }
-
-    if (items->filledIndices < .25 * items->size) {
-      /*
-       *The following code creates a new tmpArray and fills it with all the non NULL
-       *values in the original array. It then cuts the size of the items->array (the
-       *actual object) by /2. It then repopulates the resized array with tmpArray, so
-       *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
-       *minus one. Removing the requested value happens after this "if" code block.
-       */
-      assert( items->filledIndices != 0 );
-
-      void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
-      void *ptr = items->array[items->frontIndex];
-
-      int index = items->frontIndex;
-      int tmpIndex = 0;
-      while (ptr) {
-        tmpArr[tmpIndex] = ptr;
-        index += 1;
-
-        if (index == items->size) {
-          index = 0;
-        }
-
-        ptr = items->array[index];
-        tmpIndex += 1;
-      }
-
-      items->array = realloc( items->array, (items->size / 2) * sizeof(void*) );
-      items->size /= 2;
-
-      int i;
-      for (i = 0; i < items->filledIndices; i++) {
-        items->array[i] = tmpArr[i];
-      }
-
-      items->frontIndex = 0;
-      items->backIndex = items->filledIndices - 1;
-    }
   }
 
   return valToReturn;
 }
 void *removeCDAback(CDA *items) {
-  void *valToReturn = items->array[items->backIndex];
 
-  if (items->filledIndices == 0) {
-    return NULL;
-  }
+  assert(items->size != 0);
+
+  void *valToReturn = NULL;
+
+  if (items->filledIndices == 0) { return NULL; }
+
   else {
-    items->array[items->backIndex] = NULL;
-    items->filledIndices -= 1;
-
-    if (items->backIndex - 1 < 0) { items->backIndex = items->size - 1; }
-    else { items->backIndex -= 1; }
-
     if (items->filledIndices < .25 * items->size) {
       /*
        *The following code creates a new tmpArray and fills it with all the non NULL
@@ -201,36 +198,30 @@ void *removeCDAback(CDA *items) {
        *every resized array will have a frontIndex of 0 and a backIndex of filledIndices
        *minus one. Removing the requested value happens after this "if" code block.
        */
-      assert( items->filledIndices != 0 );
 
-      void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
-      void *ptr = items->array[items->backIndex];
-
-      int index = items->backIndex;
-      int tmpIndex = items->filledIndices - 1;
-      while (ptr) {
-        tmpArr[tmpIndex] = ptr;
-        index -= 1;
-
-        if (index < 0) {
-          index = items->size - 1;
-        }
-
-        ptr = items->array[index];
-        tmpIndex -= 1;
-      }
-
-      items->array = realloc( items->array, (items->size / 2) * sizeof(void*) );
-      items->size /= 2;
+      void **tmp = malloc ( items->size/2 * sizeof(void*) );
 
       int i;
+      int origIndex = items->frontIndex;
       for (i = 0; i < items->filledIndices; i++) {
-        items->array[i] = tmpArr[i];
+        tmp[i] = items->array[origIndex];
+        if (origIndex == items->size - 1) { origIndex = 0; }
+        else { origIndex += 1; }
       }
 
+      items->size *= .5;
+      items->array = realloc( items->array, items->size * sizeof(void*) );
+      items->array = tmp;
       items->frontIndex = 0;
       items->backIndex = items->filledIndices - 1;
     }
+
+    valToReturn = items->array[items->backIndex];
+    items->array[items->backIndex] = NULL;
+    items->filledIndices -= 1;
+
+    if (items->backIndex - 1 < 0) { items->backIndex = items->size -1; }
+    else { items->backIndex -= 1; }
   }
 
   return valToReturn;
@@ -242,7 +233,7 @@ void unionCDA(CDA *recipient,CDA *donor) {
     insertCDAback(recipient, donor->array[i]);
   }
 
-  donor = NULL;
+  donor->array = extractCDA(donor);;
 }
 
 void *getCDA(CDA *items,int index) {
@@ -269,31 +260,32 @@ void *setCDA(CDA *items,int index,void *value) {
 }
 
 void **extractCDA(CDA *items) {
-  assert(items->filledIndices * sizeof(void*));
+  void **tmp = malloc ( items->filledIndices * sizeof(void*) );
 
-  void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
-  void *ptr = items->array[items->frontIndex];
-
-  int index = items->frontIndex;
-  int tmpIndex = 0;
-  while (ptr) {
-    tmpArr[tmpIndex] = ptr;
-    index += 1;
-
-    if (index == items->size) {
-      index = 0;
-    }
-
-    ptr = items->array[index];
+  int i;
+  int origIndex = items->frontIndex;
+//  printf("loop will execute %d times\n", items->filledIndices);
+  for (i = 0; i < items->filledIndices; i++) {
+    tmp[i] = items->array[origIndex];
+    if (origIndex == items->size - 1) { origIndex = 0; }
+    else { origIndex += 1; }
   }
 
-  items->frontIndex = 0;
-  items->backIndex = items->filledIndices - 1;
+//  items->size = 1;
+  //items->array = realloc( items->array, items->filledIndices * sizeof(void*) );
+  //items->array = tmp;
 
-  items->array = realloc( items->array, sizeof(void*) );
+  for (i = 0; i < items->filledIndices; i++) {
+    removeCDAback(items);
+  }
+//  printf("removed\n");
+  items->size = 1;
+  items->frontIndex = 0;
+  items->backIndex = 0;
   items->filledIndices = 0;
 
-  return tmpArr;
+  //printf("%d\n", getINTEGER(tmp[]));
+  return tmp;
 }
 
 int sizeCDA(CDA *items) {

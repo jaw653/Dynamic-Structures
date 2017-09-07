@@ -260,31 +260,32 @@ void *setCDA(CDA *items,int index,void *value) {
 }
 
 void **extractCDA(CDA *items) {
-  assert(items->filledIndices * sizeof(void*));
+  void **tmp = malloc ( items->filledIndices * sizeof(void*) );
 
-  void **tmpArr = malloc( items->filledIndices * sizeof(void*) );
-  void *ptr = items->array[items->frontIndex];
-
-  int index = items->frontIndex;
-  int tmpIndex = 0;
-  while (ptr) {
-    tmpArr[tmpIndex] = ptr;
-    index += 1;
-
-    if (index == items->size) {
-      index = 0;
-    }
-
-    ptr = items->array[index];
+  int i;
+  int origIndex = items->frontIndex;
+//  printf("loop will execute %d times\n", items->filledIndices);
+  for (i = 0; i < items->filledIndices; i++) {
+    tmp[i] = items->array[origIndex];
+    if (origIndex == items->size - 1) { origIndex = 0; }
+    else { origIndex += 1; }
   }
 
-  items->frontIndex = 0;
-  items->backIndex = items->filledIndices - 1;
+//  items->size = 1;
+  //items->array = realloc( items->array, items->filledIndices * sizeof(void*) );
+  //items->array = tmp;
 
-  items->array = realloc( items->array, sizeof(void*) );
+  for (i = 0; i < items->filledIndices; i++) {
+    removeCDAback(items);
+  }
+//  printf("removed\n");
+  items->size = 1;
+  items->frontIndex = 0;
+  items->backIndex = 0;
   items->filledIndices = 0;
 
-  return tmpArr;
+  //printf("%d\n", getINTEGER(tmp[]));
+  return tmp;
 }
 
 int sizeCDA(CDA *items) {

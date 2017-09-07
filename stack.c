@@ -28,6 +28,7 @@ STACK *newSTACK(void (*d)(FILE *, void *)) {
 }
 
 void push(STACK *items, void *value) {
+  printf("flag\n");
   insertDA(items->vector, value);
 }
 

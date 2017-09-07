@@ -44,8 +44,6 @@ DA *newDA(void (*d)(FILE *, void *)) {
 }
 
 void insertDA(DA *items, void *value) {
-  //FIXME: Add assertion that mem allocated shall not be zero
-
   //If there is room in the array for the insert
   if ( items->filledIndices <= items->size ) {
     items->array[items->filledIndices] = value;
@@ -70,13 +68,13 @@ void *removeDA(DA *items) {
   //FIXME: The rubric says that the array should never shrink below the size of 1...what about initiaizing it to size 0?
   assert(items->filledIndices > 0);
 
-  void *tmp = items->array[items->filledIndices];
-  items->array[items->filledIndices] = NULL;
+  void *tmp = items->array[items->filledIndices-1];
+  items->array[items->filledIndices-1] = NULL;
   items->filledIndices -= 1;
 
-  if ( items->filledIndices < .25 * items->size ) {     //FIXME: < or <= ?
-
+  if (items->filledIndices < items->size * .25) {
     items->array = realloc( items->array, (items->size/2) * sizeof(void*) );
+    items->size /= 2;
   }
 
   return tmp;
@@ -84,17 +82,21 @@ void *removeDA(DA *items) {
 
 
 void unionDA(DA *recipient, DA *donor) {
-  //FIXME: does what i wrote below actually run in linear time?
-
-  int totalSize = recipient->size + donor->size;
+//  int totalSize = recipient->size + donor->size;
+//  int totalFilled = recipient->size + donor->size;
+/*
   recipient->array = realloc( recipient->array, totalSize * sizeof(void*) );
+  recipient->size = totalSize;
+*/
 
   int i;
-  for (i = recipient->size; i < totalSize; i++) {
-    recipient->array[i] = donor->array[i - donor->size];    //FIXME: check this to see if the logic of the algo is correct. trying to append each element onto the end of the array that is now double the size
+  for (i = 0; i < donor->filledIndices; i++) {
+    insertDA(recipient, donor->array[i]);
   }
 
-  donor = NULL;
+  donor->array = realloc( donor->array, sizeof(void*) );
+  donor->size = 1;
+  donor->filledIndices = 0;
 }
 
 void *getDA(DA *items, int index) {

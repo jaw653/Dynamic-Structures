@@ -45,36 +45,42 @@ CDA *newCDA(void (*d)(FILE *, void *)) {
 }
 
 void insertCDAfront(CDA *items, void *value) {
-  //If array is empty
+  assert( items->size * 2 * sizeof(void*) != 0 );
+
   if (items->filledIndices == 0) {
-    items->array[0] = value;
+    items->array[items->filledIndices] = value;
     items->filledIndices += 1;
   }
   else {
-    if (items->filledIndices == items->size) {
-      //If array is full
-      if (items->frontIndex != 0) {
-        assert( items->size * 2 * sizeof(void*) != 0 );
-        items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
-        items->size *= 2;
-
-        int index = 0;
-        while (index <= items->backIndex) {
-          items->array[(items->size/2) + index] = items->array[index];
-          items->array[(items->size/2) + index] = NULL;
-          index += 1;
-        }
-        items->backIndex = items->size/2 + (index - 1);
+    if (items->filledIndices < items->size) {
+      if (items->frontIndex == 0) {
+        items->frontIndex = items->size - 1;
+        items->array[items->size - 1] = value;
+        items->filledIndices += 1;
+      }
+      else {
+        items->array[items->frontIndex - 1] = value;
+        items->frontIndex -= 1;
+        items->filledIndices += 1;
       }
     }
-
-    if (items->frontIndex - 1 >= 0) {
-      //normal case, just insert
-      items->array[items->frontIndex - 1] = value;
-      items->frontIndex -= 1;
-      items->filledIndices += 1;
-    }
     else {
+      //If there is no room in the array
+      void **tmp = malloc(items->size * 2 * sizeof(void*));
+
+      int i;
+      int origIndex = items->frontIndex;
+      for (i = 0; i < items->filledIndices; i++) {
+        tmp[i] = items->array[origIndex];
+        if (origIndex == items->size - 1) { origIndex = 0; }
+        else { origIndex += 1; }
+      }
+
+      items->backIndex = i - 1;
+      items->array = realloc( items->array, 2 * items->size * sizeof(void*));
+      items->array = tmp;
+      items->size *= 2;
+
       items->array[items->size - 1] = value;
       items->filledIndices += 1;
       items->frontIndex = items->size - 1;
@@ -96,10 +102,11 @@ void insertCDAback(CDA *items, void *value) {
         items->size *= 2;
 
         int index = 0;
-        while (index <= items->backIndex) {
+        while (index != items->backIndex) {
           items->array[(items->size/2) + index] = items->array[index];
           items->array[(items->size/2) + index] = NULL;
           index += 1;
+          if (index == (items->size/2) - 1) index = 0;
         }
         items->backIndex = items->size/2 + (index - 1);
       }
@@ -295,23 +302,18 @@ int sizeCDA(CDA *items) {
 
 void visualizeCDA(FILE *fp,CDA *items) {
   fprintf(fp, "(");
-  void *ptr = items->array[items->frontIndex];
 
   if (items->filledIndices != 0) {
-    int index = items->frontIndex;
-    while (ptr) {
-      items->display(fp, ptr);
-      if (index != items->backIndex) { fprintf(fp, ","); }
-
+    int index = 0;
+    int i = items->frontIndex;
+    while (index < items->filledIndices) {
+      items->display(fp, items->array[i]);
+      if (index != items->filledIndices - 1) { fprintf(fp, ","); }
+      i += 1;
       index += 1;
-      if (index == items->size) {
-        index = 0;
-      }
-
-      ptr = items->array[index];
+      if (i == items->size) { i = 0; }
     }
   }
-
   fprintf(fp, ")");
 
   int remainder = items->size - items->filledIndices;
@@ -321,20 +323,16 @@ void visualizeCDA(FILE *fp,CDA *items) {
 
 void displayCDA(FILE *fp,CDA *items) {
   fprintf(fp, "(");
-  void *ptr = items->array[items->frontIndex];
 
   if (items->filledIndices != 0) {
-    int index = items->frontIndex;
-    while (ptr) {
-      items->display(fp, ptr);
-      if (index != items->backIndex) { fprintf(fp, ","); }
-
+    int index = 0;
+    int i = items->frontIndex;
+    while (index < items->filledIndices) {
+      items->display(fp, items->array[i]);
+      if (index != items->filledIndices - 1) { fprintf(fp, ","); }
+      i += 1;
       index += 1;
-      if (index == items->size) {
-        index = 0;
-      }
-
-      ptr = items->array[index];
+      if (i == items->size) { i = 0; }
     }
   }
 

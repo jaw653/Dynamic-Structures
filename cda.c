@@ -260,6 +260,9 @@ void *setCDA(CDA *items,int index,void *value) {
 }
 
 void **extractCDA(CDA *items) {
+  if (items->filledIndices == 0) {
+    return 0;
+  }
   void **tmp = malloc ( items->filledIndices * sizeof(void*) );
 
   int i;

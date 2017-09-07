@@ -2,10 +2,9 @@
  *Date: 08/26/17
  *University of Alabama
  *This file serves as method implementations for the
- *dynamic array object
+ *queue object
  *
  *Questions:
- *-peekQUEUE currently removes then replaces. Can i write my own method inside of CDA?
  *-add all assertions
  *-for dequeue, we should be returning the dequeue value, correct?
  */
@@ -26,6 +25,7 @@ QUEUE *newQUEUE(void (*d)(FILE *, void *)) {
 
   QUEUE *newQueue = malloc( sizeof(QUEUE) );
   newQueue->array = newCDA(d);
+  newQueue->display = d;
 
   return newQueue;
 }
@@ -54,7 +54,8 @@ void displayQUEUE(FILE* fp, QUEUE *items) {
   if (sizeCDA(items->array) != 0) {
     int i;
     for (i = 0; i < sizeCDA(items->array); i++) {
-      items->display(fp, getCDA(items->array, i) );
+      items->display(fp, getCDA(items->array, (sizeCDA(items->array) - 1) - i) );
+      if (i != sizeCDA(items->array) - 1) { fprintf(fp, ","); }
     }
   }
 

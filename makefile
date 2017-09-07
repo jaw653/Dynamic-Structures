@@ -3,7 +3,7 @@
 #University of Alabama
 #This is the generic makefile for the data structures created
 
-#REMEMBER TO REMOVE COMPILE FLAG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#REMEMBER TO REMOVE -C COMPILE FLAG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 OPTS = -Wall -Wextra -std=c99
 
 all: da.o cda.o stack.o queue.o

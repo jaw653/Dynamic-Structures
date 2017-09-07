@@ -45,7 +45,7 @@ DA *newDA(void (*d)(FILE *, void *)) {
 
 void insertDA(DA *items, void *value) {
   //If there is room in the array for the insert
-  if ( items->filledIndices <= items->size ) {
+  if ( items->filledIndices < items->size ) {
     items->array[items->filledIndices] = value;
     items->filledIndices += 1;
   }
@@ -122,6 +122,9 @@ void *setDA(DA *items, int index, void *value) {
 }
 
 void **extractDA(DA *items) {
+  if (items->filledIndices == 0) {
+    return 0;
+  }
    assert( items->filledIndices * sizeof(void*) != 0 );
 
    items->array = realloc( items->array, items->filledIndices * sizeof(void*) );

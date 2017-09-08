@@ -3,7 +3,6 @@
 #University of Alabama
 #This is the generic makefile for the data structures created
 
-#REMEMBER TO REMOVE -C COMPILE FLAG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 OPTS = -Wall -Wextra -std=c99
 OBJS = da.o cda.o stack.o queue.o integer.o
 
@@ -33,7 +32,8 @@ queue.o: queue.c queue.h
 clean:
 	 rm -rf *.o ./a.out runDATest runCDATest runStackTest runQueueTest
 
-#*************************#
+#******************************************************************************#
+
 test-da.o: test-da.c da.o integer.o
 	gcc $(OPTS) test-da.c da.o integer.o -o runDATest
 

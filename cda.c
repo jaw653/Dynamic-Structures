@@ -87,8 +87,6 @@ void insertCDAback(CDA *items, void *value) {
   if (items->filledIndices == 0) {
     items->array[items->filledIndices] = value;
     items->filledIndices += 1;
-    items->frontIndex = 0;
-    items->backIndex = 0;
   }
   else {
     if (items->filledIndices < items->size) {
@@ -218,9 +216,12 @@ void *removeCDAback(CDA *items) {
 }
 
 void unionCDA(CDA *recipient,CDA *donor) {
+  int index = donor->frontIndex;
   int i;
-  for (i = donor->frontIndex; i < donor->filledIndices; i++) {
-    insertCDAback(recipient, donor->array[i]);
+  for (i = 0; i < donor->filledIndices; i++) {
+    insertCDAback(recipient, donor->array[index]);
+    if (index + 1 == donor->size) { index = 0; }
+    else { index += 1; }
   }
 
   donor->array = extractCDA(donor);;

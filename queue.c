@@ -50,7 +50,7 @@ void displayQUEUE(FILE* fp, QUEUE *items) {
   if (sizeCDA(items->array) != 0) {
     int i;
     for (i = 0; i < sizeCDA(items->array); i++) {
-      items->display(fp, getCDA(items->array, (sizeCDA(items->array) - 1) - i) );
+      items->display(fp, getCDA(items->array, i));
       if (i != sizeCDA(items->array) - 1) { fprintf(fp, ","); }
     }
   }

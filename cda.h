@@ -1,3 +1,10 @@
+/*Author: Jake Wachs (Credit: Dr. J. Lusth)
+ *Date: 08/26/17
+ *University of Alabama
+ *
+ *This file serves as the header for the cda.c file
+ */
+
 #ifndef __CDA_INCLUDED__
 #define __CDA_INCLUDED__
 

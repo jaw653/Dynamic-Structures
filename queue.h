@@ -1,3 +1,10 @@
+/*Author: Jake Wachs (Credit: Dr. J. Lusth)
+ *Date: 08/26/17
+ *University of Alabama
+ *
+ *This file serves as the header for the queue.c file
+ */
+
 #ifndef __QUEUE_INCLUDED__
 #define __QUEUE_INCLUDED__
 

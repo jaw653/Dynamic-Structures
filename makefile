@@ -30,7 +30,6 @@ stack.o: stack.c stack.h
 queue.o: queue.c queue.h
 	gcc $(OPTS) -c queue.c
 
-#fix files to remove once you find out what all their names will be
 clean:
 	 rm -rf *.o ./a.out runDATest runCDATest runStackTest runQueueTest
 

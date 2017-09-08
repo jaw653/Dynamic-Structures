@@ -1,8 +1,8 @@
-/*Author: Jake Wachs
+/*Author: Jake Wachs (Credit: Dr. J. Lusth)
  *Date: 08/26/17
  *University of Alabama
- *This file serves as method signatures for the
- *dynamic array section
+ *
+ *This file serves as the header for the da.c file
  */
 #ifndef __DA_INCLUDED__
 #define __DA_INCLUDED__

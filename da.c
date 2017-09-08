@@ -5,18 +5,6 @@
  *dynamic array object
  */
 
- /*
-  *Questions:
-  *-remove function in this class returned items instead of tmp, check the other classes for similar mistake...
-  *-for setDA, shoudl i make the if statement if it is equal to size - 1 or just size?
-  *-to fix potential comma problem in display: if (index != backIndex) print comma
-  *-should we initialize array to size 2?
-  *-give lusth credit for making node.c, node.h, da.h files
-  *-need to add assertions for most functions
-  *-can i have all the libraries i imported?
-  *-tried to implement this file in stack.c and got compiler error "incomplete type"
-  */
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -44,6 +32,8 @@ DA *newDA(void (*d)(FILE *, void *)) {
 }
 
 void insertDA(DA *items, void *value) {
+  assert(sizeof(void*) * items->size * 2 != 0);
+
   //If there is room in the array for the insert
   if ( items->filledIndices < items->size ) {
     items->array[items->filledIndices] = value;
@@ -51,7 +41,6 @@ void insertDA(DA *items, void *value) {
   }
 
   else {
-    assert(sizeof(void*) * items->size * 2 != 0);
 
     items->array = realloc( items->array, 2 * items->size * sizeof(void*) );
 

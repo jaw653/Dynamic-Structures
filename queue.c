@@ -3,10 +3,6 @@
  *University of Alabama
  *This file serves as method implementations for the
  *queue object
- *
- *Questions:
- *-add all assertions
- *-for dequeue, we should be returning the dequeue value, correct?
  */
 
 #include <stdio.h>

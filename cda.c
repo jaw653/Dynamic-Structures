@@ -3,15 +3,6 @@
  *University of Alabama
  *This file serves as method implementations for the
  *circular dynamic array object
- *
- *Questions:
- *-to fix potential problems, may have accidentally set index = 0 instead of frontIndex or backIndex
- *-for getCDA, if they ask for 0 we should be returning the front of the arr, right?
- *-for removeCDA, should we shrink before or after the element is removed
- *-line 117(ish) if the array is empty, should i just return null?
- *-does removeCDA return the value that was removed?
- *-make sure that you added in all assertions
- *-can i add my own "private" helper functions into these classes?
  */
 
 #include <stdio.h>
@@ -138,7 +129,7 @@ void insertCDAback(CDA *items, void *value) {
 }
 
 void *removeCDAfront(CDA *items) {
-  assert( items->size != 0 );
+  assert( items->filledIndices > 0 );
 //  assert( items->filledIndices != 0 );
   void *valToReturn = NULL;
 
@@ -182,8 +173,7 @@ void *removeCDAfront(CDA *items) {
   return valToReturn;
 }
 void *removeCDAback(CDA *items) {
-
-  assert(items->size != 0);
+  assert(items->filledIndices > 0);
 
   void *valToReturn = NULL;
 
@@ -263,6 +253,7 @@ void **extractCDA(CDA *items) {
   if (items->filledIndices == 0) {
     return 0;
   }
+  assert( items->filledIndices * sizeof(void*) != 0 );
   void **tmp = malloc ( items->filledIndices * sizeof(void*) );
 
   int i;

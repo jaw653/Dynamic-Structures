@@ -1,3 +1,10 @@
+/*Author: Jake Wachs (Credit: Dr. J. Lusth)
+ *Date: 08/26/17
+ *University of Alabama
+ *
+ *This file serves as the header for the stack.c file
+ */
+
 #ifndef __STACK_INCLUDED__
 #define __STACK_INCLUDED__
 

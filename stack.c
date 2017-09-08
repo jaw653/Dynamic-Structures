@@ -3,8 +3,6 @@
  *University of Alabama
  *This file serves as method implementations for the
  *dynamic array object
- *Questions:
- *-add all assertions
  */
 
 #include <stdio.h>
@@ -12,7 +10,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include "stack.h"
-#include "../integerClass/integer.h"
+//#include "integerClass/integer.h"
 
 struct stack {
   DA *vector;

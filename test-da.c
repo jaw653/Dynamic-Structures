@@ -15,6 +15,8 @@ static void testUnion(DA *, DA *);
 static void testExtract(DA *);
 
 int main(void) {
+  printf("\n*********************** Running test-da ***************************\n");
+
   int i;
   DA *items = newDA(displayINTEGER);
   testInsertAndRemove(items);
@@ -75,6 +77,21 @@ static void testSetAndGet(DA *items) {
   printf("The first item is %d.\n", x);
   setDA(items, 0, newINTEGER(2));
   printf("After set:\n");
+  visualizeItems(items);
+  printf("\n");
+
+  printf("doing some more set testing...\n");
+  setDA(items, 1, newINTEGER(10));
+  visualizeItems(items);
+  printf("\n");
+
+  printf("doing some more set testing...\n");
+  setDA(items, 1, newINTEGER(11));
+  visualizeItems(items);
+  printf("\n");
+
+  printf("doing some more set testing...\n");
+  setDA(items, 2, newINTEGER(50));
   visualizeItems(items);
   printf("\n");
 }

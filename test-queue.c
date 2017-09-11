@@ -12,6 +12,8 @@ static void visualizeItems(QUEUE *);
 static void testEnqueueDequeuePeek(QUEUE *);
 
 int main(void) {
+  printf("\n********************** Running test-queue *************************\n");
+
   QUEUE *items = newQUEUE(displayINTEGER);
   testEnqueueDequeuePeek(items);
   return 0;

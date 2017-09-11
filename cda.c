@@ -40,7 +40,6 @@ void insertCDAfront(CDA *items, void *value) {
 
   if (items->filledIndices == 0) {
     items->array[items->filledIndices] = value;
-    items->filledIndices += 1;
     items->frontIndex = 0;
     items->backIndex = 0;
   }
@@ -49,12 +48,10 @@ void insertCDAfront(CDA *items, void *value) {
       if (items->frontIndex == 0) {
         items->frontIndex = items->size - 1;
         items->array[items->size - 1] = value;
-        items->filledIndices += 1;
       }
       else {
         items->array[items->frontIndex - 1] = value;
         items->frontIndex -= 1;
-        items->filledIndices += 1;
       }
     }
     else {
@@ -75,10 +72,11 @@ void insertCDAfront(CDA *items, void *value) {
       items->size *= 2;
 
       items->array[items->size - 1] = value;
-      items->filledIndices += 1;
       items->frontIndex = items->size - 1;
     }
   }
+
+  items->filledIndices += 1;
 }
 
 void insertCDAback(CDA *items, void *value) {
@@ -86,7 +84,8 @@ void insertCDAback(CDA *items, void *value) {
 
   if (items->filledIndices == 0) {
     items->array[items->filledIndices] = value;
-    items->filledIndices += 1;
+    items->backIndex = 0;
+    items->frontIndex = 0;
   }
   else {
     if (items->filledIndices < items->size) {
@@ -94,12 +93,10 @@ void insertCDAback(CDA *items, void *value) {
       if (items->backIndex == items->size - 1) {
         items->backIndex = 0;
         items->array[items->backIndex] = value;
-        items->filledIndices += 1;
       }
       else {
         items->array[items->backIndex + 1] = value;
         items->backIndex += 1;
-        items->filledIndices += 1;
       }
     }
     else {
@@ -121,9 +118,10 @@ void insertCDAback(CDA *items, void *value) {
       items->size *= 2;
 
       items->array[items->filledIndices] = value;
-      items->filledIndices += 1;
     }
   }
+
+  items->filledIndices += 1;
 }
 
 void *removeCDAfront(CDA *items) {
@@ -132,6 +130,8 @@ void *removeCDAfront(CDA *items) {
   void *valToReturn = NULL;
 
   if (items->filledIndices == 0) {
+    items->backIndex = 0;
+    items->frontIndex = 0;
     valToReturn = NULL;
   }
   else {
@@ -157,7 +157,7 @@ void *removeCDAfront(CDA *items) {
       items->array = realloc( items->array, items->size * sizeof(void*) );
       items->array = tmp;
       items->frontIndex = 0;
-      items->backIndex = items->filledIndices - 1;
+      items->backIndex = items->filledIndices - 2;
     }
 
     valToReturn = items->array[items->frontIndex];
@@ -175,10 +175,14 @@ void *removeCDAback(CDA *items) {
 
   void *valToReturn = NULL;
 
-  if (items->filledIndices == 0) { return NULL; }
+  if (items->filledIndices == 0) {
+    items->backIndex = 0;
+    items->frontIndex = 0;
+    return NULL;
+  }
 
   else {
-    if (items->filledIndices < .25 * items->size) {
+    if (items->filledIndices - 1 < .25 * items->size) {
       /*
        *The following code creates a new tmpArray and fills it with all the non NULL
        *values in the original array. It then cuts the size of the items->array (the
@@ -197,7 +201,7 @@ void *removeCDAback(CDA *items) {
         else { origIndex += 1; }
       }
 
-      items->size *= .5;
+      items->size /= 2;
       items->array = realloc( items->array, items->size * sizeof(void*) );
       items->array = tmp;
       items->frontIndex = 0;
@@ -206,11 +210,12 @@ void *removeCDAback(CDA *items) {
 
     valToReturn = items->array[items->backIndex];
     items->array[items->backIndex] = NULL;
-    items->filledIndices -= 1;
 
     if (items->backIndex - 1 < 0) { items->backIndex = items->size -1; }
     else { items->backIndex -= 1; }
   }
+
+  items->filledIndices -= 1;
 
   return valToReturn;
 }

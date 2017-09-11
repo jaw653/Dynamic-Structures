@@ -98,13 +98,13 @@ void *setDA(DA *items, int index, void *value) {
 
   void *replacedVal;
 
-  if (index <= items->size) {
-    replacedVal = items->array[index];
-    items->array[index] = value;
-  }
-  else {
+  if (index == items->filledIndices) {
     insertDA(items, value);
     replacedVal = NULL;
+  }
+  else {
+    replacedVal = items->array[index];
+    items->array[index] = value;
   }
 
   return replacedVal;

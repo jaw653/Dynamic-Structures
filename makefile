@@ -11,13 +11,13 @@ TESTEXES = runDATest runCDATest runStackTest runQueueTest runFailedTest1 runFail
 all: $(OBJS)
 
 test: $(OBJS) $(TESTOBJS)
-	#./runFailedTest1
-	#./runFailedTest2
+	./runFailedTest1
+	./runFailedTest2
 	./runFailedTest3
-	#./runDATest
-	#./runCDATest
-	#./runStackTest
-	#./runQueueTest
+	./runDATest
+	./runCDATest
+	./runStackTest
+	./runQueueTest
 
 integer.o: integer.c integer.h
 	gcc $(OPTS) -c integer.c
@@ -35,7 +35,7 @@ queue.o: queue.c queue.h
 	gcc $(OPTS) -c queue.c
 
 clean:
-	 rm -rf *.o $(TESTEXES)
+	 rm -rf *.o $(TESTEXES) ./a.out
 
 #******************************************************************************#
 

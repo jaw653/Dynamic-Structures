@@ -5,6 +5,12 @@
  *circular dynamic array object
  */
 
+/*
+ *Notes on how to fix:
+ *-after each remove, print the visualizeCDA to see exactly what's happening, along with the front, back, size and filledIndices
+ *-retest extract and remove to make sure you didn't f anything up
+ */
+
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
@@ -82,8 +88,11 @@ void insertCDAfront(CDA *items, void *value) {
 void insertCDAback(CDA *items, void *value) {
   assert( items->size * 2 * sizeof(void*) != 0 );
 
+//  printf("items->filledIndices is: %d\n", items->filledIndices);
   if (items->filledIndices == 0) {
-    items->array[items->filledIndices] = value;
+/******************************************************************************/
+    items->array[0] = value;
+/******************************************************************************/
     items->backIndex = 0;
     items->frontIndex = 0;
   }
@@ -126,7 +135,7 @@ void insertCDAback(CDA *items, void *value) {
 
 void *removeCDAfront(CDA *items) {
   assert( items->filledIndices > 0 );
-//  assert( items->filledIndices != 0 );
+
   void *valToReturn = NULL;
 
   if (items->filledIndices == 0) {
@@ -211,25 +220,57 @@ void *removeCDAback(CDA *items) {
     valToReturn = items->array[items->backIndex];
     items->array[items->backIndex] = NULL;
 
-    if (items->backIndex - 1 < 0) { items->backIndex = items->size -1; }
+    if (items->backIndex - 1 < 0) { items->backIndex = items->size - 1; }
     else { items->backIndex -= 1; }
   }
 
   items->filledIndices -= 1;
-
+/************************************************************************************/
+/*
+  printf("After removeCDAback(), the following: \n");
+  printf("items->filledIndices = %d\n", items->filledIndices);
+  printf("items->size = %d\n", items->size);
+  printf("frontIndex = %d\n", items->frontIndex);
+  printf("backIndex = %d\n", items->backIndex);
+*/
+/************************************************************************************/
   return valToReturn;
 }
 
 void unionCDA(CDA *recipient,CDA *donor) {
+
+  if (donor->filledIndices == 0) {
+    donor->frontIndex = 0;
+    donor->backIndex = 0;
+    donor->filledIndices = 0;
+    donor->size = 1;
+
+    return;
+  }
+
   int index = donor->frontIndex;
+
+//  printf("index is: %d\n", index);
+//  printf("element is: %d\n", donor->array[index]);
+
   int i;
+
+//  printf("donor is: \n");
+//  visualizeCDA(stdout, donor);
+
+//  printf("\nrecip is: \n");
+//  visualizeCDA(stdout, recipient);
+//  printf("\n");
+
   for (i = 0; i < donor->filledIndices; i++) {
+//    printf("run %d\n", i);
     insertCDAback(recipient, donor->array[index]);
+//    printf("after insert %d\n", i);
     if (index + 1 == donor->size) { index = 0; }
     else { index += 1; }
   }
 
-  donor->array = extractCDA(donor);;
+  donor->array = extractCDA(donor);
 }
 
 void *getCDA(CDA *items,int index) {
@@ -256,35 +297,35 @@ void *setCDA(CDA *items,int index,void *value) {
 }
 
 void **extractCDA(CDA *items) {
+  int numIterations = items->filledIndices;
+
   if (items->filledIndices == 0) {
     return 0;
   }
+
   assert( items->filledIndices * sizeof(void*) != 0 );
+
   void **tmp = malloc ( items->filledIndices * sizeof(void*) );
 
   int i;
   int origIndex = items->frontIndex;
-//  printf("loop will execute %d times\n", items->filledIndices);
   for (i = 0; i < items->filledIndices; i++) {
     tmp[i] = items->array[origIndex];
     if (origIndex == items->size - 1) { origIndex = 0; }
     else { origIndex += 1; }
   }
 
-//  items->size = 1;
-  //items->array = realloc( items->array, items->filledIndices * sizeof(void*) );
-  //items->array = tmp;
-
-  for (i = 0; i < items->filledIndices; i++) {
+  for (i = 0; i < numIterations; i++) {
     removeCDAback(items);
   }
-//  printf("removed\n");
+
+//  items->array = realloc( items->array, sizeof(void*) );
+
   items->size = 1;
   items->frontIndex = 0;
   items->backIndex = 0;
   items->filledIndices = 0;
 
-  //printf("%d\n", getINTEGER(tmp[]));
   return tmp;
 }
 

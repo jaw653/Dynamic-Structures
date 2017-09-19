@@ -281,8 +281,9 @@ void *getCDA(CDA *items,int index) {
 void *setCDA(CDA *items,int index,void *value) {
   assert(index >= -1 && index <= items->filledIndices);
 
-  void *valToReturn = NULL;
-  if (index == items->size) {
+  void *valToReturn = 0;
+
+  if (index == items->filledIndices) {
     insertCDAback(items, value);
   }
   else if (index == -1) {

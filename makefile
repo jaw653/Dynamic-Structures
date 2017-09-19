@@ -5,8 +5,8 @@
 
 OPTS = -Wall -Wextra -std=c99
 OBJS = da.o cda.o stack.o queue.o integer.o
-TESTOBJS = test-da.o test-cda.o test-stack.o test-queue.o failed-test.o failed-test2.o failed-test3.o
-TESTEXES = runDATest runCDATest runStackTest runQueueTest runFailedTest1 runFailedTest2 runFailedTest3
+TESTOBJS = test-da.o test-cda.o test-stack.o test-queue.o failed-test.o failed-test2.o failed-test3.o megaTest.o
+TESTEXES = runDATest runCDATest runStackTest runQueueTest runFailedTest1 runFailedTest2 runFailedTest3 runMegaTest
 
 all: $(OBJS)
 
@@ -18,6 +18,7 @@ test: $(OBJS) $(TESTOBJS)
 	./runCDATest
 	./runStackTest
 	./runQueueTest
+	./runMegaTest
 
 integer.o: integer.c integer.h
 	gcc $(OPTS) -c integer.c
@@ -59,3 +60,6 @@ test-stack.o: test-stack.c stack.o da.o integer.o
 
 test-queue.o: test-queue.c queue.o cda.o integer.o
 	gcc $(OPTS) test-queue.c queue.o cda.o integer.o -o runQueueTest
+
+megaTest.o: megaTest.c cda.o integer.o
+	gcc $(OPTS) megaTest.c cda.o integer.o -o runMegaTest

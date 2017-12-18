@@ -111,7 +111,7 @@ void **extractDA(DA *items) {
    void **newArr = malloc( items->size * sizeof(void *));
    int i;
    for (i = 0; i < items->size; i++) {
-	newArr[i] = items->array[i];
+	    newArr[i] = items->array[i];
    }
 
    items->array = realloc( items->array, items->filledIndices * sizeof(void*) );

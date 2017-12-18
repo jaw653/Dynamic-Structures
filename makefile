@@ -4,15 +4,24 @@
 #This is the generic makefile for the data structures created
 
 OPTS = -Wall -Wextra -std=c99
-OBJS = da.o cda.o stack.o queue.o integer.o
+OBJS = da.o cda.o stack.o queue.o integer.o real.o
+TESTOBJS = test-da.o test-cda.o test-stack.o test-queue.o failed-test.o failed-test2.o failed-test3.o resub_failed_test.o
+TESTEXES = runDATest runCDATest runStackTest runQueueTest runFailedTest1 runFailedTest2 runFailedTest3 runResubTest
 
 all: $(OBJS)
 
-test: $(OBJS) test-da.o test-cda.o test-stack.o test-queue.o
-	./runDATest
-	./runCDATest
-	./runStackTest
-	./runQueueTest
+test: $(OBJS) $(TESTOBJS)
+	#./runFailedTest1
+	#./runFailedTest2
+	#./runFailedTest3
+	#./runDATest
+	#./runCDATest
+	#./runStackTest
+	#./runQueueTest
+	./runResubTest
+
+real.o: real.c real.h
+	gcc $(OPTS) -c real.c
 
 integer.o: integer.c integer.h
 	gcc $(OPTS) -c integer.c
@@ -30,9 +39,20 @@ queue.o: queue.c queue.h
 	gcc $(OPTS) -c queue.c
 
 clean:
-	 rm -rf *.o ./a.out runDATest runCDATest runStackTest runQueueTest
+	 rm -rf *.o $(TESTEXES) ./a.out
 
 #******************************************************************************#
+resub_failed_test.o: resub_failed_test.c da.o integer.o real.o
+	gcc $(OPTS) resub_failed_test.c da.o integer.o real.o -o runResubTest
+
+failed-test.o: da-test-0-5.c da.o integer.o
+	gcc $(OPTS) da-test-0-5.c da.o integer.o -o runFailedTest1
+
+failed-test2.o: cda-test-0-4.c cda.o integer.o
+	gcc $(OPTS) cda-test-0-4.c cda.o integer.o -o runFailedTest2
+
+failed-test3.o: cda-test-0-5.c cda.o integer.o
+	gcc $(OPTS) cda-test-0-5.c cda.o integer.o -o runFailedTest3
 
 test-da.o: test-da.c da.o integer.o
 	gcc $(OPTS) test-da.c da.o integer.o -o runDATest

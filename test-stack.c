@@ -12,6 +12,8 @@ static void visualizeItems(STACK *);
 static void testPushPopPeek(STACK *);
 
 int main(void) {
+  printf("\n********************** Running test-stack *************************\n");
+
   STACK *items = newSTACK(displayINTEGER);
   testPushPopPeek(items);
   return 0;
